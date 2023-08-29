@@ -8,7 +8,7 @@ server=http.createServer(async(req,res)=>{
     const pathname=myUrl.pathname;
     const id=myUrl.searchParams.get('id')
 
-    console.log(req.url);
+    // console.log(req.url);
     if (pathname ==='/') {
         const html=await fs.readFile('./view/bicycles.html','utf-8')
         res.writeHead(200,{"content-type":"text/html"})
@@ -18,11 +18,21 @@ server=http.createServer(async(req,res)=>{
         res.writeHead(200,{"content-type":"text/html"});
         res.end(html);
     }
-    else if (/\.(png)$/i.test(res.url)) {
-      const image=await fs.readFile('./public/image/${req.url.slice(1)}') 
-      res.writeHead(200,{"content-type":"image/png"})
-      res.end(image)
+    else if(/\.(png)$/i.test(req.url)) {
+      const image=await fs.readFile(`./public/image/${req.url.slice(1)}`) 
+      res.writeHead(200,{"content-type":"image/png"});
+      res.end(image);
     }
+    else if(/\.(css)$/i.test(req.url)) {
+        const css=await fs.readFile(`./public/css/index.css`) 
+        res.writeHead(200,{"content-type":"text/css"});
+        res.end(css);
+      }
+      else if(/\.(svg)$/i.test(req.url)) {
+        const svg=await fs.readFile(`./public/image/icons.svg`) 
+        res.writeHead(200,{"content-type":"image/svg+xml"});
+        res.end(svg);
+      }
     else{
         res.writeHead(404,{"content-type":"text/html"})
         res.end('<h1>File not found</h1>')
@@ -31,4 +41,4 @@ server=http.createServer(async(req,res)=>{
     res.writeHead(200,{"content-type":"text/html"})
 });
 
-server.listen(3001);
+server.listen(3000);
