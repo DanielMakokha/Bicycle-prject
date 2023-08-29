@@ -19,7 +19,7 @@ server=http.createServer(async(req,res)=>{
 
         let allTheBicycles=''
         for (let index = 0; index < 6; index++) {
-            allTheBicycles+=AllMainBicycles
+            allTheBicycles+=replaceTemplate(AllMainBicycles,bicycles[index]);
             
         }
         html=html.replace(/<%AllMainBicycles%>/g,allTheBicycles)
@@ -28,17 +28,8 @@ server=http.createServer(async(req,res)=>{
     }else if(pathname==='/bicycle' && id>=0 && id<=5){
         let html=await fs.readFile('./view/overview.html','utf-8');
         const bicycle=bicycles.find((b) =>b.id===id);
-        console.log(bicycle);
-        html=html.replace(/<%IMAGE%>/g, bicycle.image)
-        html=html.replace(/<%NAME%>/g, bicycle.name);
-
-        let price=bicycle.originalPrice;
-        if (bicycle.hasDiscount) {
-            price=(price*(100-bicycle.discount))/100
-        }
-        html=html.replace(/<%NEWPRICE%>/g,`$${price}`)
-
-
+        
+        html=replaceTemplate(html,bicycle);
 
         res.writeHead(200,{"content-type":"text/html"});
         res.end(html);
@@ -67,3 +58,18 @@ server=http.createServer(async(req,res)=>{
 });
 
 server.listen(3000);
+
+function replaceTemplate(html,bicycle) {
+    
+        html=html.replace(/<%IMAGE%>/g, bicycle.image)
+        html=html.replace(/<%NAME%>/g, bicycle.name);
+
+        let price=bicycle.originalPrice;
+        if (bicycle.hasDiscount) {
+            price=(price*(100-bicycle.discount))/100
+        }
+        html=html.replace(/<%NEWPRICE%>/g,`$${price}.00`);
+        html=html.replace(/<%OLDPRICE%>/g,`$${bicycle.originalPrice}`);
+
+        return html;
+}
